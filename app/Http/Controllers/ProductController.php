@@ -18,7 +18,33 @@ class ProductController extends BaseController
      */
     public function index()
     { 
+        
         return $this->sendResponse([], 'Products retrieved successfully.');
+    }
+
+    public function getProductsByStoreOrCategory(Request $request)
+    {
+        // Get the 'store_id' and 'category' from the request query parameters
+        $storeId = $request->query('store_id');
+        $category = $request->query('category');
+
+        // Start the query for products
+        $query = Product::query()->with('store');
+
+        // Filter by store_id if provided
+        if ($storeId) {
+            $query->where('store_id', $storeId);
+        }
+
+        // Filter by category if provided
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        // Execute the query and get the results with the associated store information
+        $products = $query->get();
+
+        return $this->sendResponse($products, 'Products retrieved successfully.');
     }
 
     public function store(Request $request)

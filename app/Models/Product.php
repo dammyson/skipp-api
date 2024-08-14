@@ -37,30 +37,6 @@ class Product extends Model
         'description',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'barcode_formats' => 'array',
-        'ingredients' => 'array',
-        'nutrition_facts' => 'array',
-    ];
-
-    /**
-     * Get the store that owns the product.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = (string) Str::uuid();
-            }
-        });
-    }
     public function store()
     {
         return $this->belongsTo(Store::class);

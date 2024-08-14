@@ -12,10 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+   
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('store_id');
-            //$table->foreignId('store_id')->constrained()->onDelete('cascade');
+            $table->uuid('store_id'); // Change this to uuid
             $table->string('code');
             $table->string('barcode_number');
             $table->text('barcode_formats')->nullable();
@@ -33,8 +33,12 @@ return new class extends Migration
             $table->text('ingredients')->nullable();
             $table->text('nutrition_facts')->nullable();
             $table->string('size')->nullable();
+            $table->integer('quantity');
+            $table->decimal('price', 10, 2); 
             $table->text('description')->nullable();
             $table->timestamps();
+
+           // $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
         });
     }
 
