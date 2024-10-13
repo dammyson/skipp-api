@@ -48,8 +48,6 @@
         <form >
             <script src="https://js.paystack.co/v1/inline.js"></script>
             <button type="button" onclick="payWithPaystack()"> Pay </button> 
-          
-            <h1>Ojeba</h1>
           </form>
            
     </body>
