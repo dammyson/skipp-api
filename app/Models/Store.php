@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Store extends Model
 {
-    use HasFactory;
+    use HasFactory, UuidTrait;
+
+    protected $guarded = ['id'];
 
     /**
      * The attributes that are mass assignable.

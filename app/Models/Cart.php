@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UuidTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -10,8 +11,10 @@ use Illuminate\Support\Str;
 
 class Cart extends Model
 {
-    use HasFactory;
+    use HasFactory, UuidTrait;
     protected $fillable = ['user_id', 'store_id'];
+
+    protected $guarded = ['id'];
 
     public static function boot()
     {
