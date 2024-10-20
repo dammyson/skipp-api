@@ -134,4 +134,23 @@ class ProductController extends BaseController
         }
         return $this->sendResponse( $products, 'Products created successfully.', 201);
     }
+
+    public function scan($code){
+
+        try {
+
+            $product = Product::where('barcode_number', $code)->first();
+  
+            return $this->sendResponse($product, 'Products retrieved successfully.');
+          
+        
+        } catch (\Throwable $throwable) {
+            $message = $throwable->getMessage();
+            return response()->json([
+                'status' => "failed",
+                'message' =>  $message
+            ],500);
+        }
+        
+    }
 }

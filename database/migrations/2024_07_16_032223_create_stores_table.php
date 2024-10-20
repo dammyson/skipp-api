@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->text('logo')->nullable();
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

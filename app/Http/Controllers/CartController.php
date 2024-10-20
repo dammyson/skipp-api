@@ -19,23 +19,35 @@ class CartController extends BaseController
     public function addToCart(Request $request)
     {
         $user = auth()->user();
-
-        $product = Product::find($request->product_id);
-;
+    
+        $validatedData = $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'store_id' => 'required|integer|exists:stores,id',
+        ]);
+    
+        $product = Product::where('id', $validatedData['product_id'])
+                          ->where('store_id', $validatedData['store_id'])
+                          ->first();
+    
+        if (!$product) {
+            return $this->sendError('Product not found in the specified store.', 404);
+        }
+    
         $cart = Cart::firstOrCreate([
             'user_id' => $user->id,
             'store_id' => $product->store_id
         ]);
-
+    
         // Add or update the cart item
         $cartItem = $cart->items()->firstOrCreate(
             ['product_id' => $product->id],
-            ['quantity' => 1, 'price' => $product->price,  'store_id' => $product->store_id],
+            ['quantity' => 1, 'price' => $product->price, 'store_id' => $product->store_id]
         );
-
+    
         if (!$cartItem->wasRecentlyCreated) {
             $cartItem->increment('quantity');
         }
+    
         return $this->sendResponse([], 'Product added to cart.');
     }
 
