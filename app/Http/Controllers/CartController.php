@@ -21,8 +21,8 @@ class CartController extends BaseController
         $user = auth()->user();
     
         $validatedData = $request->validate([
-            'product_id' => 'required|integer|exists:products,id',
-            'store_id' => 'required|integer|exists:stores,id',
+            'product_id' => 'required|string|exists:products,id',
+            'store_id' => 'required|string|exists:stores,id',
         ]);
     
         $product = Product::where('id', $validatedData['product_id'])
