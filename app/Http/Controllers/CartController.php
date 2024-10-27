@@ -121,6 +121,7 @@ class CartController extends BaseController
             return [
                 'store_name' => $cart->store->name,
                 'store_id'   => $cart->store->id,
+                'store_logo'   => $cart->store->logo,
                 'cart_id'   => $cart->id,
                 'items'      => $cart->items->map(function ($item) {
                     return [
