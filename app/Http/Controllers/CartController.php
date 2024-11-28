@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Services\Wallet\FlutterVerificationService;
 use App\Services\Wallet\VerificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -57,11 +58,13 @@ class CartController extends BaseController
         $this->validate($request, [
             'cart_id' => 'required|string',
             'mode' => 'required|string|in:card,wallet',
-            'ref'      => 'required_if:mode,card|string'
+            'ref'      => 'required_if:mode,card|string',
+            'provider'      => 'required_if:mode,card|string|in:fluterwave,paystack'
         ]);
 
         $user = auth()->user();
 
+    try {
         $cart = Cart::where('user_id', $user->id)
         ->where('id', $request->cart_id)
         ->with('items')->first();
@@ -77,29 +80,34 @@ class CartController extends BaseController
         });
 
 
-
         if($request->mode == "card"){
-            $new_top_request = new VerificationService($request->ref);
-            $verified_request = $new_top_request->run();
+
+            if($request->provider == "paystack"){
+                $new_top_request = new VerificationService($request->ref);
+                $verified_request = $new_top_request->run();
+            }else{
+                $new_top_request = new FlutterVerificationService($request->ref);
+                $verified_request = $new_top_request->run();
+            }
     
             if($verified_request['data']['amount'] == $totalAmount){
-                $this->processOrder( $user, $cart, $totalAmount );
-            }else{
-
+                return $this->processOrder( $user, $cart, $totalAmount );
             }
           
           
         }else if($request->mode == "wallet"){
-
             $wallet = Wallet::where('user_id', $user->id)->first();
             if($wallet->balance >= $totalAmount){
                $wallet->topDown( $totalAmount);
                 $wallet = Wallet::where('user_id', $user->id)->first();
-                $this->processOrder( $user, $cart, $totalAmount );
-            }else{
-
+              return  $this->processOrder( $user, $cart, $totalAmount );
             }
         }
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['message' => 'Checkout failed', 'error' => $e->getMessage()], 500);
+    }
 
     }
 
@@ -127,6 +135,7 @@ class CartController extends BaseController
                     return [
                         'product_id'   => $item->product->id,
                         'product_name' => $item->product->title,
+                        'product_logo' => $item->product->logo,
                         'quantity'     => $item->quantity,
                         'price'        => $item->price,
                         'total_price'  => $item->quantity * $item->price,

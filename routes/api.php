@@ -42,6 +42,7 @@ Route::middleware(['auth:api'])->group(function () {
 
 Route::prefix('wallet')->middleware(['auth:api'])->group(function () {
     Route::get('/{ref}', [WalletController::class, 'verify'])->name('wallet.top_up');
+    Route::get('/fluter/{ref}', [WalletController::class, 'fluterVerify']);
 });
 
 Route::prefix('stores')->middleware(['auth:api'])->group(function () {
