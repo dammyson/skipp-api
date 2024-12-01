@@ -83,4 +83,17 @@ class AuthController extends Controller
         }
     }
 
+
+    public function profile(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $info = User::with('wallet')->where('id', $user->id)->first();
+            return $info;
+        } catch (Exception $exception) {
+            return response()->json(['status' => false,  'error' => $exception->getMessage(), 'message' => 'Error processing request'], 500);
+        }
+    }
+
+
 }

@@ -92,6 +92,8 @@ class CartController extends BaseController
     
             if($verified_request['data']['amount'] == $totalAmount){
                 return $this->processOrder( $user, $cart, $totalAmount );
+            }else{
+                return response()->json(['message' => 'Checkout failed', 'error' => "Amount is not equal to the total expected"], 500);
             }
           
           
