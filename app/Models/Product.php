@@ -38,10 +38,27 @@ class Product extends Model
         'nutrition_facts',
         'size',
         'description',
+        'quantity'
     ];
 
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+
+    public function incrementQuantity(int $amount): void
+    {
+        $this->increment('quantity', $amount);
+    }
+
+    public function decrementQuantity(int $amount): bool
+    {
+        if ($this->quantity >= $amount) {
+            $this->decrement('quantity', $amount);
+            return true;
+        }
+
+        return false;
     }
 }

@@ -38,6 +38,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('cart', [CartController::class, 'listCart']);
     Route::get('cart/{id}', [CartController::class, 'cartDetails']);
     Route::post('/checkout', [CartController::class, 'checkout']);
+
+    Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity']);
+    Route::delete('/cart/remove-item', [CartController::class, 'removeItem']);
 });
 
 

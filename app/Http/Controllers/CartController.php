@@ -227,4 +227,99 @@ class CartController extends BaseController
             return response()->json(['message' => 'Checkout failed', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function updateQuantity(Request $request)
+    {
+        $validatedData = $request->validate([
+            'cart_id' => 'required|string|exists:carts,id',
+            'product_id' => 'required|string|exists:products,id',
+            'action' => 'required|string|in:increase,decrease',
+        ]);
+
+        try {
+            $user = auth()->user();
+
+            $cart = Cart::where('user_id', $user->id)
+                ->where('id', $validatedData['cart_id'])
+                ->with('items')
+                ->first();
+
+            if (!$cart) {
+                return $this->sendError('Cart not found.', 404);
+            }
+
+            $cartItem = $cart->items()->where('product_id', $validatedData['product_id'])->first();
+
+            if (!$cartItem) {
+                return $this->sendError('Product not found in the cart.', 404);
+            }
+
+            $product = Product::find($validatedData['product_id']);
+
+            if ($validatedData['action'] === 'increase') {
+                if ($product->quantity > 0) {
+                    $cartItem->increment('quantity');
+                    $product->decrement('quantity');
+                } else {
+                    return $this->sendError('Insufficient product quantity in stock.', 400);
+                }
+            } elseif ($validatedData['action'] === 'decrease') {
+                if ($cartItem->quantity > 1) {
+                    $cartItem->decrement('quantity');
+                    $product->increment('quantity');
+                } else {
+                    return $this->sendError('Quantity cannot be less than 1. Use the remove endpoint to delete the item.', 400);
+                }
+            }
+
+            return $this->sendResponse([], 'Cart item quantity updated.');
+        } catch (\Exception $e) {
+            return $this->sendError('An error occurred while updating the quantity.', 500, $e->getMessage());
+        }
+    }
+
+    public function removeItem(Request $request)
+    {
+        $user = auth()->user();
+    
+        $validatedData = $request->validate([
+            'cart_id' => 'required|string|exists:carts,id',
+            'product_id' => 'required|string|exists:products,id',
+        ]);
+
+        try {
+            $cart = Cart::where('user_id', $user->id)
+                ->where('id', $validatedData['cart_id'])
+                ->with('items')
+                ->first();
+    
+            if (!$cart) {
+                return $this->sendError('Cart not found.', 404);
+            }
+    
+            $cartItem = $cart->items()->where('product_id', $validatedData['product_id'])->first();
+    
+            if (!$cartItem) {
+                return $this->sendError('Product not found in the cart.', 404);
+            }
+    
+            // Restore the product quantity
+            $product = Product::find($validatedData['product_id']);
+            $product->increment('quantity', $cartItem->quantity);
+    
+            // Remove the item from the cart
+            $cartItem->delete();
+    
+            // Optionally, delete the cart if it has no items left
+            if ($cart->items()->count() === 0) {
+                $cart->delete();
+            }
+    
+            return $this->sendResponse([], 'Cart item removed successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError('An error occurred while removing the item.', 500, $e->getMessage());
+        }
+    }
+    
+
 }
