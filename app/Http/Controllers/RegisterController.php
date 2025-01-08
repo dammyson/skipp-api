@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Notifications\PasswordChanged;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Illuminate\Http\JsonResponse;
@@ -51,6 +52,16 @@ class RegisterController extends BaseController
             $success['token'] =  $user->createToken('MyApp')-> accessToken; 
            
             $suser = User::with('wallet')->find( $user->id);
+
+            // $details = [
+            //     'title' => 'New Message',
+            //     'body' => 'You have received a new message.',
+            //     'url' => '/messages/1'
+            // ];
+
+            // $suser->notify(new PasswordChanged($details));
+
+            // dd('');
 
             $success['user'] =  $suser;
             return $this->sendResponse($success, 'User login successfully.');

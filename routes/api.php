@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +45,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/cart/remove-item', [CartController::class, 'removeItem']);
 });
 
-
 Route::prefix('wallet')->middleware(['auth:api'])->group(function () {
     Route::get('/{ref}', [WalletController::class, 'verify'])->name('wallet.top_up');
     Route::get('/fluter/{ref}', [WalletController::class, 'fluterVerify']);
@@ -56,6 +57,16 @@ Route::prefix('stores')->middleware(['auth:api'])->group(function () {
     Route::put('/{id}', [StoreController::class, 'update']);
     Route::delete('/{id}', [StoreController::class, 'destroy']);
     Route::patch('/{id}/status', [StoreController::class, 'updateStatus']); 
+});
+
+Route::prefix('order')->middleware(['auth:api'])->group(function () {
+    Route::get('/history', [OrderController::class, 'orderHistory']);
+});
+
+Route::prefix('notifications')->middleware('auth:api')->group(function () {
+    Route::get('/', [NotificationController::class, 'listUserNotifications'])->name('notifications.list');
+    Route::get('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::get('/read-all', [NotificationController::class, 'markAllAsRead']) ->name('notifications.markAllAsRead');
 });
 
 
