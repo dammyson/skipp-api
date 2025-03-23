@@ -54,8 +54,8 @@ class RegisterController extends BaseController
             $suser = User::with('wallet')->find( $user->id);
 
             // $details = [
-            //     'title' => 'New Message',
-            //     'body' => 'You have received a new message.',
+            //     'title' => 'Ebuka New Message',
+            //     'body' => 'You have received a new message From Ebuka.',
             //     'url' => '/messages/1'
             // ];
 

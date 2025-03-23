@@ -25,8 +25,7 @@ class PasswordChanged extends Notification
      */
     public function via(object $notifiable): array
     {
-        return [ \App\Channels\FirebaseChannel::class];
-       //return ['database'];
+        return ['database', \App\Channels\FirebaseChannel::class];
     }
 
     /**

@@ -9,7 +9,7 @@ use App\Traits\UuidTrait;
 class Wallet extends Model
 {
 
-     use UuidTrait;
+    use UuidTrait;
     protected $guarded = ['id'];
     
     /**

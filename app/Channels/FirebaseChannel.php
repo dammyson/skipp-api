@@ -21,9 +21,8 @@ class FirebaseChannel
     public function send($notifiable, $notification)
     {
         $data = $notification->toFirebase($notifiable);
-        dd($data);
-       // $title = $data['title'] ?? 'Default Title';
-       // $body = $data['body'] ?? 'Default Body';
+       $title = $data['title'] ?? 'Default Title';
+       $body = $data['body'] ?? 'Default Body';
 
         if (method_exists($notification, 'toFirebase')) {
             $this->sendNotification($notifiable,$title,$body);
