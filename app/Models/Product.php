@@ -38,7 +38,8 @@ class Product extends Model
         'nutrition_facts',
         'size',
         'description',
-        'quantity'
+        'quantity',
+        'price'
     ];
 
     public function store()
@@ -60,5 +61,9 @@ class Product extends Model
         }
 
         return false;
+    }
+
+    public function category() {
+        return $this->belongsTo(Category::class);
     }
 }
