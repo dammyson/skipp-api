@@ -8,8 +8,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class User extends Authenticatable
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+
+class User  extends Authenticatable implements HasName
 {
+
+   
+
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -23,6 +29,7 @@ class User extends Authenticatable
         'email',
         'phone_number',
         'password',
+        'name',
     ];
 
     /**
@@ -48,6 +55,15 @@ class User extends Authenticatable
         ];
     }
 
+        public function getFilamentName(): string
+        {
+            return "{$this->first_name} {$this->last_name}";
+        }
+
+    public function fulfilmentMethods() {
+        return $this->belongsToMany(FulfilmentMethod::class);
+    }
+    
     /**
      * Define a one-to-one relationship with Wallet.
      */
