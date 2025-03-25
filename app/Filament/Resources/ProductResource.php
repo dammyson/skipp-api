@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Product;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Imports\ProductImporter;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\ImportAction;
-
 use Illuminate\Database\Eloquent\Builder;
+
+use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProductResource\RelationManagers;
 
 class ProductResource extends Resource
 {
@@ -59,8 +61,12 @@ class ProductResource extends Resource
                 ->searchable()
                 ->preload()
                 ->createOptionForm([
-                    Tables\Columns\TextColumn::make('name'),
-                    Tables\Columns\TextColumn::make('image_url'),
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255), 
+                    
+                    FileUpload::make('image_url')
+                
                     
                 ]),
 
@@ -109,7 +115,8 @@ class ProductResource extends Resource
                 ->maxLength(255),   
             Forms\Components\TextInput::make('price') // decimal
                 ->required()
-                ->maxLength(255),   
+                ->maxLength(255),  
+            FileUpload::make('logo'), 
             Forms\Components\TextInput::make('description')
                 ->maxLength(255)
                             
@@ -122,6 +129,8 @@ class ProductResource extends Resource
     {
         return $table
                 ->columns([
+                    ImageColumn::make('logo')
+                    ->circular(),
                     Tables\Columns\TextColumn::make('store.name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('category.name')
