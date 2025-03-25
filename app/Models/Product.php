@@ -39,6 +39,7 @@ class Product extends Model
         'size',
         'description',
         'quantity',
+        'logo',
         'price'
     ];
 
