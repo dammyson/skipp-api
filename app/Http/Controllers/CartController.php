@@ -177,13 +177,14 @@ class CartController extends BaseController
         }
     }
 
-    private function processOrder($user, $cart, $totalAmount ){
+    private function processOrder($user, $cart, $totalAmount, $fulfilMethod="Not specified" ){
         try {
  
             $invoice = Invoice::create([
                 'user_id'    => $user->id,
                 'store_id'   => $cart->store_id,
                 'total_amount' => $totalAmount,
+                'fulfilment_method' => $fulfilMethod
             ]);
 
             // Create Invoice Items
@@ -193,12 +194,13 @@ class CartController extends BaseController
                     'product_id' => $cartItem->product_id,
                     'quantity'   => $cartItem->quantity,
                     'price'      => $cartItem->price,
+                    'ful'
                 ]);
 
                 // Optionally, you can reduce product stock or mark as sold here
                 $product = Product::find($cartItem->product_id);
-                if ($product && $product->stock >= $cartItem->quantity) {
-                    $product->decrement('stock', $cartItem->quantity);
+                if ($product && $product->quantity >= $cartItem->quantity) {
+                    $product->decrement('quantity', $cartItem->quantity);
                 }
             }
 
@@ -208,6 +210,7 @@ class CartController extends BaseController
                 'invoice_id'   => $invoice->id,
                 'total_amount' => $totalAmount,
                 'status'       => 'completed',
+                'wallet_balance' => 0
             ]);
 
             // Clear Cart

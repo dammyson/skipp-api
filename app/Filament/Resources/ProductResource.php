@@ -8,15 +8,19 @@ use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Imports\ProductImporter;
 use Filament\Forms\Components\FileUpload;
-use Filament\Tables\Actions\ImportAction;
-use Illuminate\Database\Eloquent\Builder;
 
+use Filament\Tables\Actions\ImportAction;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ProductResource\RelationManagers;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 
 class ProductResource extends Resource
 {
@@ -154,13 +158,65 @@ class ProductResource extends Resource
                     Tables\Columns\TextColumn::make('nutrition_facts'),
                     Tables\Columns\TextColumn::make('size'),
                     Tables\Columns\TextColumn::make('description'),
-                    Tables\Columns\TextColumn::make('quantity')
+                    Tables\Columns\TextColumn::make('quantity'),
+                    Tables\Columns\TextColumn::make('price')
+                    ->sortable()
                     
                
             ])
+            // ->groups([
+            //     Group::make('price')
+            //         ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('price', $direction)),
+            // ])
+            ->emptyStateHeading('No items added yet.')
+            ->emptyStateDescription(" Click 'Add Item' to get started.")
             ->filters([
-                //
-                Tables\Filters\SelectFilter::make('barcode_number')
+                SelectFilter::make('sort_by')
+                    ->label('Sort By')
+                    ->options([
+                        'latest' => 'Lastest (last 2 days)',
+                        'oldest' => 'Oldest(Before 2 Days)',
+                        'lowest' => 'Lowest Stock(stock less than 5 in quantity)',
+                        'highest_price' => 'Higest Price',
+                    ])                    
+                    ->query(function (Builder $query, $data): Builder {
+                        return $query
+                            ->when(
+                                $data['value'] == 'latest',
+                                fn(Builder $query) => $query->where('created_at', '>=', now()->subDays(2))
+                                // fn(Builder $query) => $query->where('created_at', '>=', now()->subMinutes(2))
+                            )
+                            ->when(
+                                $data['value'] == 'oldest',
+                                fn(Builder $query) =>  $query->where('created_at', '<=', now()->subDays(2))
+                                // fn(Builder $query) =>  $query->where('created_at', '<=', now()->subMinutes(2))
+                            )
+                            ->when(
+                                $data['value'] == 'lowest',
+                                fn(Builder $query) =>  $query->where('quantity', '<=', 5)
+                                // fn(Builder $query) =>  $query->where('created_at', '<=', now()->subMinutes(2))
+                            )
+                            ->when(
+                                $data['value'] == 'highest_price',
+                                fn(Builder $query) =>  $query->orderBy('price')
+
+                            );
+
+
+                    //     // return match($value) {
+                    //     //     'lastest' => $query->where('created_at', '>=', now()->subDays(2)),
+                    //     //     'oldest' => $query->where('created_at', '<=', now()->subDays(2)),
+                    //     //     'highest_price' => $query->orderBy('amount', 'desc'),
+                    //     //     default => $query,
+                    //     // };
+                    }),
+
+
+
+                
+                Tables\Filters\SelectFilter::make('barcode_number'),
+                
+                
 
             ])
             ->actions([
@@ -171,7 +227,7 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->headerActions([
+            ->headerActions([                
                 ImportAction::make()
                     ->importer(ProductImporter::class)
             ]);

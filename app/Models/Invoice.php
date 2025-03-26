@@ -12,7 +12,7 @@ class Invoice extends Model
 
     protected $guarded = ['id'];
 
-    protected $fillable = ['user_id', 'store_id', 'total_amount'];
+    protected $fillable = ['user_id', 'store_id', 'total_amount', 'fulfilment_method'];
 
     public function items()
     {
