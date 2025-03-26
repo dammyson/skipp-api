@@ -76,6 +76,7 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('title')
+            // ->label('name')
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
                 Tables\Columns\TextColumn::make('store.name')
