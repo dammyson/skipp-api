@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Clusters\Inventory;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Category;
@@ -28,7 +29,7 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    // protected static ?string $cluster = Settings::class;
+    protected static ?string $cluster = Inventory::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
