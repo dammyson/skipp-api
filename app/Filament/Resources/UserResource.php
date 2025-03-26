@@ -21,8 +21,11 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $cluster = Settings::class;
+    
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    protected static ?string $navigationIcon = 'heroicon-s-face-smile';
 
 
     public static function getNavigationLabel(): string
