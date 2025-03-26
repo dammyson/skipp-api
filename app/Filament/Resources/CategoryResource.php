@@ -62,22 +62,9 @@ class CategoryResource extends Resource
                     ->getStateUsing(fn (Category $record) => $record->productCount()) // Call the function
                     ->sortable(),
 
-
-                // Split::make([
-                //     ImageColumn::make('image_url')
-                //         ->circular(),
-                //     TextColumn::make('name')
-                //         ->weight(FontWeight::Bold)
-                //         ->searchable()
-                //         ->sortable(),
-                //     Stack::make([
-                //         TextColumn::make('phone')
-                //             ->icon('heroicon-m-phone'),
-                //         TextColumn::make('email')
-                //             ->icon('heroicon-m-envelope'),
-                //     ]),
-                // ])
             ])
+            ->emptyStateHeading('No categories created yet')
+            ->emptyStateDescription("Click 'Create Category' to start organizing your inventory.")
             ->filters([
                 //
             ])
