@@ -148,7 +148,7 @@ class ProductResource extends Resource
                     ->options([
                         // 'latest' => 'Lastest (last 2 days)',
                         // 'oldest' => 'Oldest(Before 2 Days)',
-                        'lowest' => 'Lowest Stock(stocks below threshold)',
+                        'lowest' => 'Lowest Stock',
                         // 'highest_price' => 'Higest Price',
                     ])                    
                     ->query(function (Builder $query, $data): Builder {
