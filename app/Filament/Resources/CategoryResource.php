@@ -33,7 +33,6 @@ class CategoryResource extends Resource
 
     // protected static ?string $cluster = Inventory::class;
 
-    // protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?string $navigationGroup = 'Inventory';
@@ -57,12 +56,6 @@ class CategoryResource extends Resource
                     })
                     ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
 
-                // $cloudinaryImage = $request->file('image')->storeOnCloudinary('products');
-                // $url = $cloudinaryImage->getSecurePath();
-                // $public_id = $cloudinaryImage->getPublicId();
-            
-                // Forms\Components\TextInput::make('image_url')
-                //     ->label('image_url'),
             ]);
     }
 
@@ -73,7 +66,6 @@ class CategoryResource extends Resource
                 ImageColumn::make('image_url')
                     ->circular(),
                 Tables\Columns\TextColumn::make('name'),
-                // Tables\Columns\TextColumn::make('image_url'),
                 Tables\Columns\TextColumn::make('products_count') // Use products_count
                     ->label('Product Quantity')
                     ->getStateUsing(fn (Category $record) => $record->productCount()) // Call the function
