@@ -165,7 +165,7 @@ class ProductResource extends Resource
                             )
                             ->when(
                                 $data['value'] == 'lowest',
-                                fn(Builder $query) =>  $query->whereColumn('low_stock_threshold', '<=', 'products.low_stock_threshold')
+                                fn(Builder $query) =>  $query->whereColumn('quantity', '<=', 'products.low_stock_threshold')
                                
                             );
                             
