@@ -20,26 +20,11 @@ class Product extends Model
      */
     protected $fillable = [
         'store_id',
-        'code',
-        'barcode_number',
-        'barcode_formats',
-        'mpn',
-        'model',
-        'asin',
-        'title',
-        'category',
-        'manufacturer',
-        'serial_number',
-        'weight',
-        'dimension',
-        'warranty_length',
-        'brand',
-        'ingredients',
-        'nutrition_facts',
-        'size',
+        'name',
         'description',
         'quantity',
-        'logo',
+        'image_url',
+        'low_stock_threshold',
         'price'
     ];
 
