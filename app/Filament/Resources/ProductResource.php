@@ -83,45 +83,12 @@ class ProductResource extends Resource
                     
                 ]),
 
-            Forms\Components\TextInput::make('code')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('barcode_number')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('barcode_formats')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('mpn')
-                ->maxLength(255),                
-            Forms\Components\TextInput::make('model')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('asin')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('title')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('category')
-                ->required()
-                ->maxLength(255),
-            Forms\Components\TextInput::make('manufacturer')
-                ->required()
-                ->maxLength(255),                
-            Forms\Components\TextInput::make('serial_number')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('weight')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('dimension')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('warranty_length')
-                ->maxLength(255),
-            Forms\Components\TextInput::make('brand')
+              
+            Forms\Components\TextInput::make('name') // integer
                 ->required()
                 ->maxLength(255),   
-            Forms\Components\TextInput::make('ingredients')
-                ->maxLength(255),   
-            Forms\Components\TextInput::make('nutrition_facts')
-                ->maxLength(255),                  
-            Forms\Components\TextInput::make('size')
+            Forms\Components\TextInput::make('description') // integer
+                ->required()
                 ->maxLength(255),   
             Forms\Components\TextInput::make('quantity') // integer
                 ->required()
@@ -129,9 +96,12 @@ class ProductResource extends Resource
             Forms\Components\TextInput::make('price') // decimal
                 ->required()
                 ->maxLength(255), 
+            Forms\Components\TextInput::make('low_stock_threshold') // decimal
+                ->required()
+                ->maxLength(255), 
 
-            FileUpload::make('logo')
-                ->label('logo')
+            FileUpload::make('image_url')
+                ->label('item image')
                 ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
                 ->directory('uploads') // Optional: define a folder in Cloudinary
                 ->saveUploadedFileUsing(function ($file) {
@@ -139,86 +109,66 @@ class ProductResource extends Resource
                     return Storage::disk('cloudinary')->url($path);
                 })
                 ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
-            Forms\Components\TextInput::make('description')
-                ->maxLength(255)
+           
                             
         ]);
 
-        $table->uuid('store_id');
     }
 
     public static function table(Table $table): Table
     {
         return $table
                 ->columns([
-                    ImageColumn::make('logo')
-                    ->circular(),
+                    ImageColumn::make('image_url')
+                        ->label('item image')
+                        ->circular(),
                     Tables\Columns\TextColumn::make('store.name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('category.name')
                         ->default('null')
                         ->searchable(),
-                    Tables\Columns\TextColumn::make('code')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('barcode_number'),
-                    Tables\Columns\TextColumn::make('mpn'),
-                    Tables\Columns\TextColumn::make('model'),
-                    Tables\Columns\TextColumn::make('asin'),
-                    Tables\Columns\TextColumn::make('title')
-                        ->searchable(),
-                    Tables\Columns\TextColumn::make('category'),
-                    Tables\Columns\TextColumn::make('manufacturer'),
-                    Tables\Columns\TextColumn::make('weight'),
-                    Tables\Columns\TextColumn::make('dimension'),
-                    Tables\Columns\TextColumn::make('warranty_length'),
-                    Tables\Columns\TextColumn::make('brand'),
-                    Tables\Columns\TextColumn::make('ingredients'),
-                    Tables\Columns\TextColumn::make('nutrition_facts'),
-                    Tables\Columns\TextColumn::make('size'),
+                   
                     Tables\Columns\TextColumn::make('description'),
                     Tables\Columns\TextColumn::make('quantity'),
                     Tables\Columns\TextColumn::make('price')
+                    ->sortable(),
+                    Tables\Columns\TextColumn::make('low_stock_threshold'),
+                    Tables\Columns\TextColumn::make('created_at')
+                    ->label('sort_table_by_creation_time')
                     ->sortable()
+
                     
                
             ])
-            // ->groups([
-            //     Group::make('price')
-            //         ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('price', $direction)),
-            // ])
             ->emptyStateHeading('No items added yet.')
             ->emptyStateDescription(" Click 'Add Item' to get started.")
             ->filters([
                 SelectFilter::make('sort_by')
                     ->label('Sort By')
                     ->options([
-                        'latest' => 'Lastest (last 2 days)',
-                        'oldest' => 'Oldest(Before 2 Days)',
-                        'lowest' => 'Lowest Stock(stock less than 5 in quantity)',
-                        'highest_price' => 'Higest Price',
+                        // 'latest' => 'Lastest (last 2 days)',
+                        // 'oldest' => 'Oldest(Before 2 Days)',
+                        'lowest' => 'Lowest Stock(stocks below threshold)',
+                        // 'highest_price' => 'Higest Price',
                     ])                    
                     ->query(function (Builder $query, $data): Builder {
                         return $query
                             ->when(
                                 $data['value'] == 'latest',
                                 fn(Builder $query) => $query->where('created_at', '>=', now()->subDays(2))
-                                // fn(Builder $query) => $query->where('created_at', '>=', now()->subMinutes(2))
+                             
                             )
                             ->when(
                                 $data['value'] == 'oldest',
                                 fn(Builder $query) =>  $query->where('created_at', '<=', now()->subDays(2))
-                                // fn(Builder $query) =>  $query->where('created_at', '<=', now()->subMinutes(2))
+                              
                             )
                             ->when(
                                 $data['value'] == 'lowest',
-                                fn(Builder $query) =>  $query->where('quantity', '<=', 5)
-                                // fn(Builder $query) =>  $query->where('created_at', '<=', now()->subMinutes(2))
-                            )
-                            ->when(
-                                $data['value'] == 'highest_price',
-                                fn(Builder $query) =>  $query->orderBy('price')
-
+                                fn(Builder $query) =>  $query->whereColumn('low_stock_threshold', '<=', 'products.low_stock_threshold')
+                               
                             );
+                            
 
 
                     //     // return match($value) {

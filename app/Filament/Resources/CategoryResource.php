@@ -43,19 +43,7 @@ class CategoryResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->label('category_name')
-                    ->required(),
-
-                FileUpload::make('image_url')
-                    ->avatar()
-                    ->label('image_url')
-                    ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
-                    ->directory('uploads') // Optional: define a folder in Cloudinary
-                    ->saveUploadedFileUsing(function ($file) {
-                        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
-                        return Storage::disk('cloudinary')->url($path);
-                    })
-                    ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
-
+                    ->required()
             ]);
     }
 
@@ -63,8 +51,6 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image_url')
-                    ->circular(),
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('products_count') // Use products_count
                     ->label('Product Quantity')
