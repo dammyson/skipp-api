@@ -2,12 +2,14 @@
        
 namespace App\Http\Controllers;
        
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController as BaseController;
-use App\Models\Product;
 use League\Csv\Reader;
+use App\Models\Product;
 use League\Csv\Statement;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\BaseController as BaseController;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductController extends BaseController
 {
@@ -152,5 +154,33 @@ class ProductController extends BaseController
             ],500);
         }
         
+    }
+
+
+    public function uploadImages(Request $request)
+    {
+
+        // dd("i ran");
+        $validateRequest = $request->validate([
+            'image' => ['required', 'image', 'max:2048'],
+        ]);
+
+        $file = $request->file('image');
+        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+        // dump($path);
+        $url = Storage::disk('cloudinary')->url($path);
+
+        // dump($url);
+
+        $cloudinaryImage = $request->file('image')->storeOnCloudinary('products');
+         dump($cloudinaryImage);
+        $url = $cloudinaryImage->getSecurePath();
+        $public_id = $cloudinaryImage->getPublicId();
+
+        return response()->json([
+            "url"=> $url,
+            "public_id" => $public_id
+        ]);
+
     }
 }
