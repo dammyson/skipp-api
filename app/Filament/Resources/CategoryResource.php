@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Clusters\Inventory;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Category;
@@ -10,28 +9,34 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Filament\Clusters\Settings;
+use App\Filament\Clusters\Inventory;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\Layout\Split;
+
+
+
+use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CategoryResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-
-
-
-use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
 // use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Filament\Resources\CategoryResource\RelationManagers;
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $cluster = Inventory::class;
+    // protected static ?string $cluster = Inventory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+
+    protected static ?string $navigationGroup = 'Inventory';
 
     public static function form(Form $form): Form
     {
@@ -43,7 +48,18 @@ class CategoryResource extends Resource
 
                 FileUpload::make('image_url')
                     ->avatar()
-                    ->label('image_url'),
+                    ->label('image_url')
+                    ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
+                    ->directory('uploads') // Optional: define a folder in Cloudinary
+                    ->saveUploadedFileUsing(function ($file) {
+                        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+                        return Storage::disk('cloudinary')->url($path);
+                    })
+                    ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
+
+                // $cloudinaryImage = $request->file('image')->storeOnCloudinary('products');
+                // $url = $cloudinaryImage->getSecurePath();
+                // $public_id = $cloudinaryImage->getPublicId();
             
                 // Forms\Components\TextInput::make('image_url')
                 //     ->label('image_url'),
@@ -57,7 +73,7 @@ class CategoryResource extends Resource
                 ImageColumn::make('image_url')
                     ->circular(),
                 Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('image_url'),
+                // Tables\Columns\TextColumn::make('image_url'),
                 Tables\Columns\TextColumn::make('products_count') // Use products_count
                     ->label('Product Quantity')
                     ->getStateUsing(fn (Category $record) => $record->productCount()) // Call the function

@@ -63,6 +63,8 @@ Route::prefix('order')->middleware(['auth:api'])->group(function () {
     Route::get('/history', [OrderController::class, 'orderHistory']);
 });
 
+Route::post('loadimages', [ProductController::class, 'uploadImages'])->name('uploadImages');
+
 Route::prefix('notifications')->middleware('auth:api')->group(function () {
     Route::get('/', [NotificationController::class, 'listUserNotifications'])->name('notifications.list');
     Route::get('/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
