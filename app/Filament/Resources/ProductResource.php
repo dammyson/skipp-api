@@ -10,10 +10,11 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Grouping\Group;
+use Illuminate\Support\Facades\Storage;
 use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Imports\ProductImporter;
-use Filament\Forms\Components\FileUpload;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,7 +72,14 @@ class ProductResource extends Resource
                         ->maxLength(255), 
                     
                     FileUpload::make('image_url')
-                
+                        ->label('category image')
+                        ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
+                        ->directory('uploads') // Optional: define a folder in Cloudinary
+                        ->saveUploadedFileUsing(function ($file) {
+                            $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+                            return Storage::disk('cloudinary')->url($path);
+                        })
+                        ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
                     
                 ]),
 
@@ -120,8 +128,17 @@ class ProductResource extends Resource
                 ->maxLength(255),   
             Forms\Components\TextInput::make('price') // decimal
                 ->required()
-                ->maxLength(255),  
-            FileUpload::make('logo'), 
+                ->maxLength(255), 
+
+            FileUpload::make('logo')
+                ->label('logo')
+                ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
+                ->directory('uploads') // Optional: define a folder in Cloudinary
+                ->saveUploadedFileUsing(function ($file) {
+                    $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+                    return Storage::disk('cloudinary')->url($path);
+                })
+                ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
             Forms\Components\TextInput::make('description')
                 ->maxLength(255)
                             
