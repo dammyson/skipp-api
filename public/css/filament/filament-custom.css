@@ -1,0 +1,12 @@
+.filament-login-page {
+    background-color: rgba(0, 0, 0, 0.6); /* Adjust the opacity as needed */
+}
+
+.fi-simple-layout {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Ensure text remains visible */
+.fi-simple-layout * {
+    color: white !important;
+}
