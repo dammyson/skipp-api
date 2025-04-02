@@ -29,6 +29,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->registration(Register::class) 
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary' => '#6e62e5', // Change the primary color to a custom blue
                 // 'danger' => Color::Red,
