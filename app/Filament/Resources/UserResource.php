@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+// use App\Filament\Resources\CustomerResource\Pages;
+use Filament\Resources\Pages\Page;
 
 class UserResource extends Resource
 {
@@ -88,6 +90,15 @@ class UserResource extends Resource
             ]);
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ListUsers::class,
+            Pages\EditUser::class,
+            Pages\ChangePassword::class
+        ]);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -100,9 +111,10 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
+            // 'create' => Pages\CreateUser::route('/create'),
             'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
+            'changePassword' => Pages\ChangePassword::route('/{record}/change-password'),
         ];
     }
 }

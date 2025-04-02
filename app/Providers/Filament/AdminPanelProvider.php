@@ -18,6 +18,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\Facades\Filament;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,8 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
             ->registration(Register::class) 
+            ->login()
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary' => '#6e62e5', // Change the primary color to a custom blue
                 // 'danger' => Color::Red,
@@ -65,4 +68,11 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+    // public function boot(): void
+    // {
+    //     Filament::serving(function () {
+    //         Filament::
+    //     });
+    // }
 }

@@ -10,3 +10,19 @@
 .fi-simple-layout * {
     color: white !important;
 }
+
+
+.fi-topbar .fi-brand img {
+    transition: filter 0.3s ease-in-out;
+}
+
+/* Apply dark background to the logo in dark mode */
+.dark .fi-topbar .fi-brand img {
+    filter: invert(1); /* Inverts colors, making white -> black */
+}
+
+.dark .fi-topbar .fi-brand img {
+    background-color: black; /* Set background to black in dark mode */
+    padding: 5px;
+    border-radius: 5px; /* Optional rounded corners */
+}
