@@ -18,6 +18,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\Facades\Filament;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,7 +28,6 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
             ->registration(Register::class) 
             ->colors([
                 'primary' => '#6e62e5', // Change the primary color to a custom blue
@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
                 // 'success' => Color::Green,
                 // 'warning' => Color::Orange,
             ])
+            ->brandLogo(asset('images/skippImage.jpg'))
             //  ->defaultThemeMode(ThemeMode::Dark) 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -64,4 +65,11 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+    // public function boot(): void
+    // {
+    //     Filament::serving(function () {
+    //         Filament::
+    //     });
+    // }
 }
