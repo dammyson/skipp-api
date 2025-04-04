@@ -22,6 +22,8 @@ Route::post('resetPassword', [AuthController::class, 'resetPassword']);
 
 Route::prefix('products')->middleware(['auth:api'])->group(function () {
     Route::get('/', [ProductController::class,'getProductsByStoreOrCategory'])->name('get.product');
+    Route::get('/product-id/{id}', [ProductController::class, 'getProductById']);
+    Route::get('/product-code/{code}', [ProductController::class, 'getProductByCode']);
     Route::post('/', [ProductController::class, 'store']);
 });
 

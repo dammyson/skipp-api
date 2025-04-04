@@ -172,15 +172,48 @@ class ProductController extends BaseController
 
         // dump($url);
 
-        $cloudinaryImage = $request->file('image')->storeOnCloudinary('products');
-         dump($cloudinaryImage);
-        $url = $cloudinaryImage->getSecurePath();
-        $public_id = $cloudinaryImage->getPublicId();
+        // $cloudinaryImage = $request->file('image')->storeOnCloudinary('products');
+        //  dump($cloudinaryImage);
+        // $url = $cloudinaryImage->getSecurePath();
+        // $public_id = $cloudinaryImage->getPublicId();
 
         return response()->json([
             "url"=> $url,
-            "public_id" => $public_id
+            // "public_id" => $public_id
         ]);
 
+    }
+
+    public function getProductById($productId) {
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json([
+                "error" => true,
+                "message" => "Product does not exist"
+            ]);
+        }
+
+
+        return response()->json([
+            "error" => false,
+            "product" => $product
+        ]);
+    }
+
+    public function getProductByCode($code) {
+        $product = Product::where('code', $code)->first();
+
+        if (!$product) {
+            return response()->json([
+                "error" => true,
+                "message" => "Product does not exist"
+            ]);
+        }
+
+        return response()->json([
+            "error" => false,
+            "product" => $product
+        ]);
     }
 }

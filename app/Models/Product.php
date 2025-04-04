@@ -19,13 +19,30 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'store_id',
         'name',
         'description',
         'quantity',
         'image_url',
         'low_stock_threshold',
-        'price'
+        'price',
+        'code',
+        'barcode_number',
+        'barcode_formats',
+        'mpn',
+        'model',
+        'asin',
+        'category',
+        'manufacturer',
+        'serial_number',
+        'weight',
+        'dimension',
+        'warranty_length',
+        'brand',
+        'ingredients',
+        'nutrition_facts',
+        'size'
     ];
 
     public function store()
@@ -52,6 +69,13 @@ class Product extends Model
     public function category() {
         return $this->belongsTo(Category::class);
     }
+
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 
     
 }

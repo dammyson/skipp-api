@@ -28,7 +28,7 @@ class Register extends BaseRegister
                         $this->getEmailFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getPasswordConfirmationFormComponent(),
-                        // $this->getRoleFormComponent(), 
+                        $this->getRoleFormComponent(), 
                     ])
                     ->statePath('data'),
             ),
@@ -78,11 +78,12 @@ class Register extends BaseRegister
 
     protected function getRoleFormComponent(): Component
     {
-        return Select::make('role')
+        return Select::make('user_type')
             ->options([
                 'vendor' => 'Vendor',
                 'super-admin' => 'super-admin',
             ])
+            ->label('role')
             ->default('vendor')
             ->required();
     }
