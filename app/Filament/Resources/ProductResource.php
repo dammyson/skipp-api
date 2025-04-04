@@ -107,9 +107,13 @@ class ProductResource extends Resource
             Forms\Components\TextInput::make('quantity') // integer
                 ->required()
                 ->maxLength(255),   
+   
             Forms\Components\TextInput::make('price') // decimal
                 ->required()
-                ->maxLength(255), 
+                ->hint('Fill as integer or decimal without comma.')
+                // ->descriptions('fill as integer or decimal without comma')
+                ->maxLength(255),
+              
             Forms\Components\TextInput::make('low_stock_threshold') // decimal
                 ->required()
                 ->maxLength(255), 
@@ -152,12 +156,14 @@ class ProductResource extends Resource
                     ImageColumn::make('image_url')
                         ->label('item image')
                         ->circular(),
+                    Tables\Columns\TextColumn::make('name')
+                        ->label("item name")
+                        ->searchable(),
                     Tables\Columns\TextColumn::make('store.name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('category.name')
                         ->default('null')
                         ->searchable(),
-                   
                     Tables\Columns\TextColumn::make('description'),
                     Tables\Columns\TextColumn::make('quantity'),
                     Tables\Columns\TextColumn::make('price')
