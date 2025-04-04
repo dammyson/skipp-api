@@ -185,7 +185,7 @@ class ProductController extends BaseController
     }
 
     public function getProductById($productId) {
-        $product = Product::find($productId);
+        $product = Product::find($productId)->load('category');
 
         if (!$product) {
             return response()->json([
@@ -202,7 +202,7 @@ class ProductController extends BaseController
     }
 
     public function getProductByCode($code) {
-        $product = Product::where('code', $code)->first();
+        $product = Product::where('code', $code)->with('category')->first();
 
         if (!$product) {
             return response()->json([
