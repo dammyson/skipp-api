@@ -30,9 +30,11 @@ class User  extends Authenticatable implements HasName
         'phone_number',
         'password',
         'name',
+        'pin_number',
         'business_name',
         'store_type',
-        'business_address'
+        'business_address',
+        'user_type'
         
     ];
 

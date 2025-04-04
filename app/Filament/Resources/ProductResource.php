@@ -10,10 +10,12 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Grouping\Group;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Hidden;
 use Illuminate\Support\Facades\Storage;
+
 use Filament\Tables\Columns\ImageColumn;
 use App\Filament\Imports\ProductImporter;
-
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Filters\SelectFilter;
@@ -29,6 +31,14 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Inventory';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return Product::query()->when(
+            Auth::user()->user_type !== "super-admin",
+            fn($query) => $query->where('user_id', Auth::id())
+        );
+    }
 
     public static function form(Form $form): Form
     {
@@ -82,6 +92,10 @@ class ProductResource extends Resource
                         ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
                     
                 ]),
+            
+            Hidden::make('user_id')
+                ->default(Auth::id()) // Set to currently authenticated user
+                ->dehydrated(true), // Ensures it gets saved to the database
 
               
             Forms\Components\TextInput::make('name') // integer
@@ -99,6 +113,22 @@ class ProductResource extends Resource
             Forms\Components\TextInput::make('low_stock_threshold') // decimal
                 ->required()
                 ->maxLength(255), 
+            Forms\Components\TextInput::make('code')
+                ->unique(), 
+            Forms\Components\TextInput::make('barcode_number'), 
+            Forms\Components\TextInput::make('barcode_formats'), 
+            Forms\Components\TextInput::make('mpn'), 
+            Forms\Components\TextInput::make('model'), 
+            Forms\Components\TextInput::make('asin'), 
+            Forms\Components\TextInput::make('manufacturer'), 
+            Forms\Components\TextInput::make('serial_number'), 
+            Forms\Components\TextInput::make('weight'), 
+            Forms\Components\TextInput::make('dimension'), 
+            Forms\Components\TextInput::make('warranty_length'), 
+            Forms\Components\TextInput::make('brand'), 
+            Forms\Components\TextInput::make('ingredients'), 
+            Forms\Components\TextInput::make('nutrition_facts'), 
+            Forms\Components\TextInput::make('size'), 
 
             FileUpload::make('image_url')
                 ->label('item image')
@@ -133,11 +163,24 @@ class ProductResource extends Resource
                     Tables\Columns\TextColumn::make('price')
                     ->sortable(),
                     Tables\Columns\TextColumn::make('low_stock_threshold'),
+                    Tables\Columns\TextColumn::make('code'),
+                    Tables\Columns\TextColumn::make('barcode_number'),
+                    Tables\Columns\TextColumn::make('barcode_formats'),
+                    Tables\Columns\TextColumn::make('mpn'),
+                    Tables\Columns\TextColumn::make('model'),
+                    Tables\Columns\TextColumn::make('asin'),
+                    Tables\Columns\TextColumn::make('manufacturer'),
+                    Tables\Columns\TextColumn::make('serial_number'),
+                    Tables\Columns\TextColumn::make('weight'),
+                    Tables\Columns\TextColumn::make('dimension'),
+                    Tables\Columns\TextColumn::make('warranty_length'),
+                    Tables\Columns\TextColumn::make('brand'),
+                    Tables\Columns\TextColumn::make('ingredients'),
+                    Tables\Columns\TextColumn::make('nutrition_facts'),
+                    Tables\Columns\TextColumn::make('size'),
                     Tables\Columns\TextColumn::make('created_at')
                     ->label('sort_table_by_creation_time')
-                    ->sortable()
-
-                    
+                    ->sortable()                   
                
             ])
             ->emptyStateHeading('No items added yet.')
