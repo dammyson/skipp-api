@@ -110,7 +110,7 @@ class ProductResource extends Resource
    
             Forms\Components\TextInput::make('price') // decimal
                 ->required()
-                ->hint('Fill as integer or decimal without comma.')
+                ->hint('no comma or special characters')
                 // ->descriptions('fill as integer or decimal without comma')
                 ->maxLength(255),
               
