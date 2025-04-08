@@ -33,7 +33,7 @@ class CategoryResource extends Resource
 
     // protected static ?string $cluster = Inventory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Inventory';
 
