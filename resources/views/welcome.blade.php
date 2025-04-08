@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
   <title>AIR PEACE API</title>
 
   <script src="https://checkout.flutterwave.com/v3.js"></script>

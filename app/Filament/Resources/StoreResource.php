@@ -19,6 +19,11 @@ class StoreResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    //
+    // protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    
+    // protected static ?string $navigationIcon = 'heroicon-o-bookmark-square';
+
 
     public static function form(Form $form): Form
     {

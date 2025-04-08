@@ -24,7 +24,15 @@ class AnswerResource extends Resource
     protected static ?string $navigationGroup = 'Settings';
 
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    
+    // protected static ?string $navigationIcon = 'heroicon-o-tag';
+
+    
+    // protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {   
