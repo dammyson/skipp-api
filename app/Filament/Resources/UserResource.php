@@ -2,31 +2,34 @@
 
 namespace App\Filament\Resources;
 
+use Closure;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
 
+use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use App\Filament\Clusters\Settings;
 use Filament\Forms\Components\Grid;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
 // use App\Filament\Resources\CustomerResource\Pages;
+use Filament\Forms\Components\Section;
+
+
+
 use Filament\Tables\Columns\ViewColumn;
-
-
-
 use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
+use Filament\Forms\Get;
 
 class UserResource extends Resource
 {
@@ -74,12 +77,35 @@ class UserResource extends Resource
             Section::make('Profile')
                 ->schema([
                     Grid::make(2)->schema([
-                        Select::make('fulfimentMethod_id')
-                                    ->relationship('fulfilmentMethods', 'method_name')
-                                    ->searchable()
-                                    ->multiple()
-                                    ->preload()
-                            ->prefixIcon('heroicon-o-user'),
+                        // Select::make('fulfimentMethod_id')
+                        //             ->relationship('fulfilmentMethods', 'method_name')
+                        //             ->searchable()
+                        //             ->multiple()
+                        //             ->preload()
+                        //     ->prefixIcon('heroicon-o-user'), 
+
+                        
+                        CheckboxList::make('fulfilmentMethods')
+                            ->label('Fulfilment Methods')
+                            ->relationship('fulfilmentMethods', 'method_name')
+                            ->reactive()
+                            ->columns(2),
+                       
+                        TextInput::make('store_policy')
+                            ->label('Store Policy')
+                            ->visible(fn (Get $get) =>
+                                in_array('delivery', $get('fulfilmentMethods') ?? [])
+                            ),
+
+
+                        TextInput::make('store_address')
+                            ->label('Store Address')
+                            ->visible(fn (Get $get) =>
+                                collect($get('fulfilmentMethods'))->intersect([
+                                    'in-store pickup',
+                                    'Buy Online, Pick Up In-Store [BOPIS]'
+                                ])->isNotEmpty()
+                            ),
 
                         TextInput::make('first_name')
                             ->label('first name')
@@ -116,16 +142,6 @@ class UserResource extends Resource
                     
                     ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
 
-                    // FileUpload::make('avatar')
-                    //     ->label('Change Avatar')
-                    //     ->avatar()
-                    //     ->image()
-                    //     ->imageEditor()
-                    //     ->maxSize(10240)
-                    //     ->imagePreviewHeight('100')
-                    //     ->hint('Supported Format: SVG, JPG, PNG (10mb each)')
-                    //     ->hintColor('gray')
-                    //     ->panelLayout('compact'),
                 ])
                 ->columns(1)
                 ->columnSpanFull()
