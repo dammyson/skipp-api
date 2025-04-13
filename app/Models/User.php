@@ -35,7 +35,9 @@ class User  extends Authenticatable implements HasName
         'store_type',
         'business_address',
         'user_type',
-        'image_url'
+        'image_url',
+        'store_policy',
+        'store_address'
         
     ];
 
