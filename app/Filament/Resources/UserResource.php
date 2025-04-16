@@ -76,21 +76,7 @@ class UserResource extends Resource
         ->schema([
             Section::make('Profile')
                 ->schema([
-                    Grid::make(2)->schema([
-                        // Select::make('fulfimentMethod_id')
-                        //             ->relationship('fulfilmentMethods', 'method_name')
-                        //             ->searchable()
-                        //             ->multiple()
-                        //             ->preload()
-                        //     ->prefixIcon('heroicon-o-user'), 
-
-                        
-                        CheckboxList::make('fulfilmentMethods')
-                            ->label('Fulfilment Methods')
-                            ->relationship('fulfilmentMethods', 'method_name')
-                            ->reactive()
-                            ->columns(2),
-                       
+                    Grid::make(2)->schema([                                               
                         TextInput::make('store_policy')
                             ->label('Store Policy')
                             ->visible(fn (Get $get) =>
@@ -141,6 +127,13 @@ class UserResource extends Resource
                     })
                     
                     ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
+
+                    CheckboxList::make('fulfilmentMethods')
+                    ->label('Fulfilment Methods')
+                    ->relationship('fulfilmentMethods', 'method_name')
+                    ->reactive()
+                    // ->bulkToggleable()
+                    ->columns(2),
 
                 ])
                 ->columns(1)

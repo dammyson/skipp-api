@@ -46,14 +46,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Wallet top-up successful:', data);
-                alert('Wallet top-up successful!');
+              console.log('Wallet top-up successful:', data);
+              alert('Wallet top-up successful!');
 
-                window.location.href = 'http://127.0.0.1:8000/admin/wallets';
+              window.location.href = 'http://127.0.0.1:8000/admin/wallets';
             })
             .catch(error => {
-                console.error('Error topping up wallet:', error);
-                alert('Failed to top up wallet.');
+              console.error('Error topping up wallet:', error);
+              alert('Failed to top up wallet.');
+              window.location.href = 'http://127.0.0.1:8000/admin';
             });
 
             // window.location.href = 'http://127.0.0.1:8000/admin';
@@ -62,6 +63,7 @@
         },
         onClose: function() {
           alert('window closed');
+          window.location.href = 'http://127.0.0.1:8000/admin';
         }
       });
       handler.openIframe();

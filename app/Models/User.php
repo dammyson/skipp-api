@@ -13,9 +13,6 @@ use Filament\Models\Contracts\HasName;
 
 class User  extends Authenticatable implements HasName
 {
-
-   
-
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -79,5 +76,15 @@ class User  extends Authenticatable implements HasName
     public function wallet()
     {
         return $this->hasOne(Wallet::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $user->wallet()->create([
+               'balance' => 0,
+               'ledger_balance' => 0 
+            ]);
+        });
     }
 }
