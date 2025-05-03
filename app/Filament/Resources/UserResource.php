@@ -6,20 +6,22 @@ use Closure;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 
+use Filament\Tables\Table;
+use App\Models\FulfilmentMethod;
 use Filament\Resources\Resource;
 use Filament\Resources\Pages\Page;
 use App\Filament\Clusters\Settings;
 use Filament\Forms\Components\Grid;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Select;
 // use App\Filament\Resources\CustomerResource\Pages;
+use Illuminate\Support\Facades\Auth;
+
+
+
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
-
-
-
 use Filament\Tables\Columns\ViewColumn;
 use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +31,6 @@ use Filament\Forms\Components\CheckboxList;
 use App\Filament\Resources\UserResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\UserResource\RelationManagers;
-use Filament\Forms\Get;
 
 class UserResource extends Resource
 {
@@ -72,26 +73,33 @@ class UserResource extends Resource
         //             ->label("last_name"), 
         //     ]);
 
+        // ✅ Get the fulfilment method IDs here
+        $deliveryId = FulfilmentMethod::where('method_name', 'delivery')->value('id');
+        $bopisId = FulfilmentMethod::where('method_name', 'Pick Up In-Store [BOPIS]')->value('id');
+        $pickupId = FulfilmentMethod::where('method_name', 'In-store pickup')->value('id');
+
         return $form
         ->schema([
             Section::make('Profile')
                 ->schema([
-                    Grid::make(2)->schema([                                               
-                        TextInput::make('store_policy')
-                            ->label('Store Policy')
-                            ->visible(fn (Get $get) =>
-                                in_array('delivery', $get('fulfilmentMethods') ?? [])
-                            ),
+                    Grid::make(2)->schema([                           
+                        
+                        // TextInput::make('store_policy')
+                        //     ->label('Store Policy')
+                        //     ->visible(fn (Get $get) =>
+                        //         in_array('delivery', $get('fulfilmentMethods') ?? [])
+                        //     ),
 
 
-                        TextInput::make('store_address')
-                            ->label('Store Address')
-                            ->visible(fn (Get $get) =>
-                                collect($get('fulfilmentMethods'))->intersect([
-                                    'in-store pickup',
-                                    'Buy Online, Pick Up In-Store [BOPIS]'
-                                ])->isNotEmpty()
-                            ),
+                        // TextInput::make('store_address')
+                        //     ->label('Store Address')
+                        //     ->visible(fn (Get $get) =>
+                        //         collect($get('fulfilmentMethods'))->intersect([
+                        //             'in-store pickup',
+                        //             'Buy Online, Pick Up In-Store [BOPIS]'
+                        //         ])->isNotEmpty()
+                            // ),
+
 
                         TextInput::make('first_name')
                             ->label('first name')
@@ -109,31 +117,67 @@ class UserResource extends Resource
                             ->label('pin Number'),
                             
 
-                        TextInput::make('address')
-                            ->label('Address')
-                            ->prefixIcon('heroicon-o-map-pin'),
+                        // TextInput::make('address')
+                        //     ->label('Address')
+                        //     ->prefixIcon('heroicon-o-map-pin'),
+
+                        //     TextInput::make('store_policy')
+                        //     ->label('Store Policy')
+                        //     ->visible(fn (Get $get) =>
+                        //         in_array(4, $get('fulfilmentMethods') ?? []) // 1 = delivery ID
+                        //     ),
+
+                        // TextInput::make('store_address')
+                        //     ->label('Store Address')
+                        //     ->visible(fn (Get $get) =>
+                        //         collect($get('fulfilmentMethods'))->intersect([2, 3])->isNotEmpty() // 2 & 3 = pickup options
+                        //     ),
+
+                    Grid::make(1)->schema([ 
+                        FileUpload::make('image_url')
+                        ->label('Change Avatar')                    
+                        ->hint('Supported Format: SVG, JPG, PNG (10mb each)')
+                        ->hintColor('gray')
+                        ->panelLayout('compact')
+                        ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
+                        ->directory('uploads') // Optional: define a folder in Cloudinary
+                        ->saveUploadedFileUsing(function ($file) {
+                            $path = Storage::disk('cloudinary')->putFile('uploads', $file);
+                            return Storage::disk('cloudinary')->url($path);
+                        })
+                        
+                        ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
+                        // Move fulfilmentMethods above conditional inputs
+                        CheckboxList::make('fulfilmentMethods')
+                            ->label('Fulfilment Methods')
+                            ->relationship('fulfilmentMethods', 'method_name')
+                            ->reactive()
+                            ->columns(2),
+
+                        // Conditional inputs now come below
+                        TextInput::make('store_policy')
+                            ->label('Store Policy')
+                            ->visible(fn (Get $get) =>
+                                in_array($deliveryId, $get('fulfilmentMethods') ?? [])
+                            ),
+
+                        TextInput::make('store_address')
+                                ->label('Store Address')
+                                ->visible(fn (Get $get) =>
+                                    collect($get('fulfilmentMethods'))->intersect([$pickupId, $bopisId])->isNotEmpty() // 2 & 3 = pickup options
+                                ),
+                        ]),
                     ]),
-
-                    FileUpload::make('image_url')
-                    ->label('Change Avatar')                    
-                    ->hint('Supported Format: SVG, JPG, PNG (10mb each)')
-                    ->hintColor('gray')
-                    ->panelLayout('compact')
-                    ->disk('cloudinary') // Ensure you have the correct disk configured in `config/filesystems.php`
-                    ->directory('uploads') // Optional: define a folder in Cloudinary
-                    ->saveUploadedFileUsing(function ($file) {
-                        $path = Storage::disk('cloudinary')->putFile('uploads', $file);
-                        return Storage::disk('cloudinary')->url($path);
-                    })
                     
-                    ->getUploadedFileNameForStorageUsing(fn ($file) => $file->hashName()),
 
-                    CheckboxList::make('fulfilmentMethods')
-                    ->label('Fulfilment Methods')
-                    ->relationship('fulfilmentMethods', 'method_name')
-                    ->reactive()
-                    // ->bulkToggleable()
-                    ->columns(2),
+                 
+
+                    // CheckboxList::make('fulfilmentMethods')
+                    //     ->label('Fulfilment Methods')
+                    //     ->relationship('fulfilmentMethods', 'method_name')
+                    //     ->reactive()
+                    //     // ->bulkToggleable()
+                    //     ->columns(2),
 
                 ])
                 ->columns(1)
